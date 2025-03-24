@@ -2,6 +2,7 @@ from src.models.repository.users_repository import UsersRepository
 from src.http_types.http_request import HttpRequest
 from src.http_types.http_response import HttpResponse
 from src.errors.error_types.http_not_found import HttpNotFoundError
+from sqlalchemy.exc import IntegrityError
 
 class UsersHandler:
     def __init__(self) -> None:
@@ -16,3 +17,15 @@ class UsersHandler:
         users_dict = [user.to_dict() for user in users]
         
         return HttpResponse(body={"users": users_dict}, status_code=200)
+
+    def create_user(self, request: HttpRequest) -> HttpResponse:
+        try:
+            user_data = request.body
+            new_user = self.__users_repository.create_user(user_data)
+            return HttpResponse(body=new_user.to_dict(), status_code=201)
+        except KeyError as e:
+            return HttpResponse(body={"error": f"Missing field: {str(e)}"}, status_code=400)
+        except IntegrityError as e:
+            return HttpResponse(body={"error": str(e)}, status_code=409)
+        except Exception as e:
+            return HttpResponse(body={"error": str(e)}, status_code=400)

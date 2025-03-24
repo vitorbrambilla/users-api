@@ -9,8 +9,18 @@ users_route_bp = Blueprint('users_route', __name__)
 def get_users():
     try:
         users_handler = UsersHandler()
-
         http_response = users_handler.find_all()
+        return jsonify(http_response.body), http_response.status_code
+    except Exception as error:
+        http_response = handle_error(error)
+        return jsonify(http_response.body), http_response.status_code
+
+@users_route_bp.route('/users', methods=['POST'])
+def create_user():
+    try:
+        users_handler = UsersHandler()
+        http_request = HttpRequest(body=request.json)
+        http_response = users_handler.create_user(http_request)
         return jsonify(http_response.body), http_response.status_code
     except Exception as error:
         http_response = handle_error(error)

@@ -9,20 +9,14 @@ class __DBConnectionHandler:
         db_host = os.getenv("DB_HOST", "localhost")
         db_name = os.getenv("DB_NAME", "default_db")
         self.__connection_string = f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
-        self.__engine = None
-        self.session = None
-
-    def connect_to_db(self) -> None:
         self.__engine = create_engine(self.__connection_string)
+        self.Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
 
-    def get_engine(self):
-        return self.__engine
+    def connect_to_db(self):
+        self.session = self.Session()
 
     def __enter__(self):
-        if self.__engine is None:
-            self.connect_to_db()
-        session_maker = sessionmaker(bind=self.__engine)
-        self.session = session_maker()
+        self.connect_to_db()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
