@@ -29,3 +29,12 @@ class UsersHandler:
             return HttpResponse(body={"error": str(e)}, status_code=409)
         except Exception as e:
             return HttpResponse(body={"error": str(e)}, status_code=400)
+    
+    def delete_user(self, user_id: int) -> HttpResponse:
+        try:
+            deleted = self.__users_repository.delete_user(user_id)
+            if not deleted:
+                raise HttpNotFoundError(f"User with id {user_id} not found")
+            return HttpResponse(body={"message": "User deleted successfully"}, status_code=200)
+        except Exception as e:
+            return HttpResponse(body={"error": str(e)}, status_code=400)

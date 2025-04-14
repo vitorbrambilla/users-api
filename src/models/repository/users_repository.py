@@ -44,3 +44,21 @@ class UsersRepository:
             except Exception as e:
                 database.session.rollback()
                 raise e
+    
+    def delete_user(self, user_id: int) -> bool:
+        with db_connection_handler as database:
+            try:
+                user = (
+                    database.session
+                    .query(Users)
+                    .filter(Users.id == user_id)
+                    .first()
+                )
+                if not user:
+                    return False
+                database.session.delete(user)
+                database.session.commit()
+                return True
+            except Exception as e:
+                database.session.rollback()
+                raise e

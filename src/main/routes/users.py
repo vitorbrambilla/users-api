@@ -25,3 +25,13 @@ def create_user():
     except Exception as error:
         http_response = handle_error(error)
         return jsonify(http_response.body), http_response.status_code
+    
+@users_route_bp.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        users_handler = UsersHandler()
+        http_response = users_handler.delete_user(user_id)
+        return jsonify(http_response.body), http_response.status_code
+    except Exception as error:
+        http_response = handle_error(error)
+        return jsonify(http_response.body), http_response.status_code
