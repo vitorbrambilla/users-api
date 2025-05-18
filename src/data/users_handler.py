@@ -29,6 +29,18 @@ class UsersHandler:
             return HttpResponse(body={"error": str(e)}, status_code=409)
         except Exception as e:
             return HttpResponse(body={"error": str(e)}, status_code=400)
+        
+    def update_user(self, user_id: int, request: HttpRequest) -> HttpResponse:
+        try:
+            user_data = request.body
+            updated_user = self.__users_repository.update_user(user_id, user_data)
+            if not updated_user:
+                raise HttpNotFoundError(f"User with id {user_id} not found")
+            return HttpResponse(body=updated_user.to_dict(), status_code=200)
+        except KeyError as e:
+            return HttpResponse(body={"error": f"Missing field: {str(e)}"}, status_code=400)
+        except Exception as e:
+            return HttpResponse(body={"error": str(e)}, status_code=400)
     
     def delete_user(self, user_id: int) -> HttpResponse:
         try:

@@ -26,6 +26,17 @@ def create_user():
         http_response = handle_error(error)
         return jsonify(http_response.body), http_response.status_code
     
+@users_route_bp.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        users_handler = UsersHandler()
+        http_request = HttpRequest(body=request.json)
+        http_response = users_handler.update_user(user_id, http_request)
+        return jsonify(http_response.body), http_response.status_code
+    except Exception as error:
+        http_response = handle_error(error)
+        return jsonify(http_response.body), http_response.status_code
+    
 @users_route_bp.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     try:

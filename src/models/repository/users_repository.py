@@ -44,6 +44,30 @@ class UsersRepository:
             except Exception as e:
                 database.session.rollback()
                 raise e
+            
+    def update_user(self, user_id: int, user_info: Dict) -> Users:
+        with db_connection_handler as database:
+            try:
+                user = (
+                    database.session
+                    .query(Users)
+                    .filter(Users.id == user_id)
+                    .first()
+                )
+                if not user:
+                    return None
+
+                user.name = user_info.get("name", user.name)
+                user.email = user_info.get("email", user.email)
+                user.phone = user_info.get("phone", user.phone)
+                user.status = user_info.get("status", user.status)
+
+                database.session.commit()
+                database.session.refresh(user)
+                return user
+            except Exception as e:
+                database.session.rollback()
+                raise e
     
     def delete_user(self, user_id: int) -> bool:
         with db_connection_handler as database:
